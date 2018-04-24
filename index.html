@@ -191,8 +191,8 @@ function setGraphTitles() {
 	let students_title = d3.select("#enrollment-title").text("Number of Students: "+userChoice);
 }
 
-let title = d3.select("h1.title").text("Top Universities in the USA");
-let subtitle = d3.select(".description").html("This tool is designed to help you choose schools to attend in the United States based on data from 2018. Select a state to view the top schools ranked by several categories. By default, the charts show the top 30 schools based on US News' annual rankings. Place your cursor over the bars on the graphs for more information about individual schools. It should be noted that this tool does not include America's many colleges that do not have university status.");
+let title = d3.select("h1.title").html("Top Universities in the USA");
+let subtitle = d3.select(".description").html("This tool is designed to help you choose a university to attend in the United States based on data from 2018. Select a state to view the top schools ranked by several categories. By default, the charts show the top 30 schools based on US News' annual rankings. Place your cursor over the bars on the graphs for more information about individual schools. It should be noted that this tool does not include America's many colleges that do not have university status.");
 let credits = d3.select(".credits").html("<div>April 24, 2018 // <a href='https://zachzager.wixsite.com/portfolio'>Zach Zager</a>, <a href='https://www.linkedin.com/in/jingleizuo/'>Jinglei Zuo</a>, and <a href='https://www.linkedin.com/in/%E5%8F%AF-%E5%85%B0-a4247a142/'>Ke \"Coco\" Lan</a></div>");
 setGraphTitles();
 
@@ -264,7 +264,8 @@ function tallyStates(d) {
 // initializes tooltip for all charts and maps
 let tooltip = d3.select("body")
 	.append("div")
-	.style('background-color','#d0d4db')
+	.style('background-color','#ffffff')
+	.style('box-shadow', '0 2px 4px 0 rgba(0,0,0,0.16), 0 2px 10px 0 rgba(0,0,0,0.12)')
 	.style('border','solid 0.5px')
 	.style('border-radius','5px')
 	.style('padding','10px 10px 10px 10px')
@@ -336,7 +337,8 @@ function drawMap(us,schools){
 	    	.attr('id',(d)=>{ return stateCodesRev[d.id]; })
 	    	.attr("d", path)
 	    .on("mouseover", (d)=>{ 
-	    	tooltip.html("<div class='tooltip-title center'>"+stateCodesToName[d.id]+"</div><div class='center'>"+stateCountList[stateCodesRev[d.id]]+" school(s)</div>");
+	    	tooltip.html("<div class='tooltip-title center'>"+stateCodesToName[d.id]+"</div><div class='center'>"
+	    		+stateCountList[stateCodesRev[d.id]]+" school(s)</div>");
 	    	tooltip.style("visibility", "visible");
 	    })
 	    .on("mousemove", (d)=>{ tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
@@ -379,6 +381,8 @@ function getTop30(schools) {
 // Callback functions for generating graph tool tips
 //
 function graphMouseOver(d) {
+	d3.select(this).style('fill','#45b1cb'); // highlight hovered over bar
+
 	// format cost after aid
 	let cost_after_aid = "";
 	if (d['cost-after-aid'] == null) {
@@ -387,6 +391,7 @@ function graphMouseOver(d) {
 		cost_after_aid = " ($"+d['cost-after-aid']+" after aid)";
 	}
 
+	// add and format tooltip content
 	tooltip.html("<div class='tooltip-title center'>"+d['displayName']+"</div>\
 		<div class='tooltip-subtitle center'>"+d['city']+', '+d['state']+'</div>\
 		<div>Average ACT Score: '+d['act-avg']+'</div>\
@@ -399,7 +404,10 @@ function graphMouseOver(d) {
 	tooltip.append('hi');
 }
 function graphMouseMove(d) { tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px"); }
-function graphMouseOut(d) { tooltip.style("visibility", "hidden"); }
+function graphMouseOut(d) { 
+	d3.select(this).style('fill','steelblue'); // revert bar to original color
+	tooltip.style("visibility", "hidden");
+}
 
 // Acceptance Rate
 // draw chart of acceptance rate
@@ -425,6 +433,7 @@ function drawAcceptance(schools,state) {
         .attr("transform", "translate(0," + graph_height + ")")
       	.call(d3.axisBottom(x).ticks(5).tickFormat((d)=> { return +d+"%"; }).tickSizeInner([-graph_height]));
 
+    // add bars to chart
     acceptance.selectAll(".bar")
         .data(schools)
    		.enter().append("rect")
@@ -451,7 +460,6 @@ function drawAcceptance(schools,state) {
 // draw chart of average ACT test scores
 function drawScores(schools,state) {
 	schools.sort( (a,b)=>{ return a['act-avg']-b['act-avg']; }); // sort items
-
 	testScores.selectAll("*").remove(); // remove previous chart
 
 	// set the ranges
@@ -472,6 +480,7 @@ function drawScores(schools,state) {
         .attr("transform", "translate(0," + graph_height + ")")
       	.call(d3.axisBottom(x).ticks(5).tickFormat((d)=> { return +d; }).tickSizeInner([-graph_height]));
 
+    // add bars to chart
     testScores.selectAll(".bar")
         .data(schools)
    		.enter().append("rect")
@@ -517,6 +526,7 @@ function drawTuition(schools,state) {
         .attr("transform", "translate(0," + graph_height + ")")
       	.call(d3.axisBottom(x).ticks(5).tickFormat((d)=> { return "$"+d; }).tickSizeInner([-graph_height]));
 
+    // add bars to chart
     tuition.selectAll(".bar")
         .data(schools)
    		.enter().append("rect")
@@ -563,6 +573,7 @@ function drawEnrollment(schools,state) {
         .attr("transform", "translate(0," + graph_height + ")")
       	.call(d3.axisBottom(x).ticks(5).tickFormat((d)=> { return d; }).tickSizeInner([-graph_height]));
 
+    // add bars to chart
     enrollment.selectAll(".bar")
         .data(schools)
    		.enter().append("rect")

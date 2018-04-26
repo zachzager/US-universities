@@ -2,18 +2,95 @@
 // mapApp.js
 //
 
-let userChoice = 'USA Top 30';
-
-function setGraphTitles() {
-	let scores_title = d3.select("#scores-title").html("Average ACT Scores: "+userChoice);
-	let tuition_title = d3.select("#tuition-title").text("Average Annual Tuition: "+userChoice);
-	let acceptance_title = d3.select("#acceptance-title").text("Acceptance Rate: "+userChoice);
-	let students_title = d3.select("#enrollment-title").text("Number of Students: "+userChoice);
-}
-
+// page title initialization
 let title = d3.select("h1.title").html("Top Universities in the USA");
 let subtitle = d3.select(".description").html("This tool is designed to help you choose a university to attend in the United States based on data from 2018. Select a state to view the top schools ranked by several categories. By default, the charts show the top 30 schools based on US News' annual rankings. Place your cursor over the bars on the graphs for more information about individual schools. It should be noted that this tool does not include America's many colleges that do not have university status. The data used in this tool is from Kaggle user Christopher Lambert's <a href='https://www.kaggle.com/theriley106/university-statistics'>\"University Statistics\"</a> dataset via US News & World Report.");
 let credits = d3.select(".credits").html("<div>April 24, 2018 // <a href='https://zachzager.wixsite.com/portfolio'>Zach Zager</a>, <a href='https://www.linkedin.com/in/jingleizuo/'>Jinglei Zuo</a>, and <a href='https://www.linkedin.com/in/%E5%8F%AF-%E5%85%B0-a4247a142/'>Ke \"Coco\" Lan</a></div>");
+
+/* Modal */
+let modal = document.getElementById('myModal'); // Get the modal
+let span = document.getElementsByClassName("close")[0]; // Get the <span> element that closes the modal
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// Close modal when the user clicks anywhere else on the page
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+/* */
+
+// user selection tracker initialization
+// let schoolCount = 0;
+let selectedSchools = [];
+let selectionTracker = d3.select(".school-list")
+	.html("<div'>View Selected Universities (<span id='schoolCount'>"+selectedSchools.length+"</span> total)</div>")
+	.on('click',showModal);
+
+// opens the modal
+function showModal() {
+	modal.style.display = "block";
+	let modalBody = d3.select('.modal-body');
+	modalBody.selectAll('*').remove();
+
+	modalBody.append('div')
+		.attr('class','text modal-title')
+		.html("Selected Schools")
+		.enter();
+
+	let modalBodyContent = modalBody.append('div').attr('class','modal-body-content')
+
+	for (item in selectedSchools) {
+		let d = selectedSchools[item];
+		// format cost after aid
+		let cost_after_aid = "";
+		if (d['cost-after-aid'] == null) {
+			cost_after_aid = "";
+		} else {
+			cost_after_aid = " ($"+d['cost-after-aid']+" after aid)";
+		}
+
+		let link = "http://www.google.com/search?q="+d['displayName'].split(' ').join('+');
+
+		modalBodyContent.append('div')
+			.attr('class','text modal-school')
+			.html("<div class='modal-school-title center'><a href="+link+">"+d['displayName']+"</a></div>\
+			<div class='modal-school-subtitle center'>"+d['city']+', '+d['state']+"</div>\
+			<div class='modal-body'><div>Average ACT Score: "+d['act-avg']+'</div>\
+			<div>Enrollment: '+d['enrollment']+"</div>\
+			<div>Tuition: $"+d['tuition']+cost_after_aid+"</div>\
+			<div>Acceptance Rate: "+d['acceptance-rate']+"%</div>\
+			<img onerror='this.style.display=\"none\"' class='thumbnail' src="+d['primaryPhotoThumb']+" />\
+			<div class='center'>Click to add to list</div></div>");
+	}
+}
+
+function incrementSchoolCount() {	
+	d3.select('#schoolCount').html(selectedSchools.length);
+}
+
+// add selected school to list after confirming that it is not a duplicate
+function addSelectedSchoolToList(school) {
+	for (items in selectedSchools) {
+		if (school['displayName'] === selectedSchools[items]['displayName']) {
+			return;
+		}
+	}
+	selectedSchools.push(school);
+}
+
+// graph initialization
+let userChoice = 'USA Top 30';
+function setGraphTitles() {
+	d3.select("#scores-title").html("Average ACT Scores: "+userChoice);
+	d3.select("#tuition-title").text("Average Annual Tuition: "+userChoice);
+	d3.select("#acceptance-title").text("Acceptance Rate: "+userChoice);
+	d3.select("#enrollment-title").text("Number of Students: "+userChoice);
+}
 setGraphTitles();
 
 let map = d3.select("svg.map"),
@@ -139,6 +216,7 @@ function setChoice(state="") {
 
 // scaled color of prev state for viz
 let selectedStateFill;
+let hoveredStateFill;
 
 // draws map on page
 function drawMap(us,schools){
@@ -158,32 +236,42 @@ function drawMap(us,schools){
 	    	.attr('id',(d)=>{ return stateCodesRev[d.id]; })
 	    	.attr("d", path)
 	    .on("mouseover", (d)=>{ 
+	    	// show tooltip
 	    	tooltip.html("<div class='tooltip-title center'>"+stateCodesToName[d.id]+"</div><div class='center'>"
 	    		+stateCountList[stateCodesRev[d.id]]+" "+getNumSchools(stateCountList[stateCodesRev[d.id]])+"</div>");
 	    	tooltip.style("visibility", "visible");
+	    	// brushing
+	    	// hoveredStateFill = d3.select('#'+stateCodesRev[d.id]).style("fill");
+	    	// d3.select('#'+stateCodesRev[d.id]).style("fill", (d)=>{return d3.rgb(d.color).darker(1);});
+	    	// d3.select('#'+stateCodesRev[d.id]).style("fill", "yellow");
 	    })
 	    .on("mousemove", (d)=>{ tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
-		.on("mouseout", (d)=>{ tooltip.style("visibility", "hidden"); })
+		.on("mouseout", (d)=>{ 
+			tooltip.style("visibility", "hidden"); // hide tooltip
+			 // remove brushing
+			// d3.select('#'+stateCodesRev[d.id]).style("fill", (d)=>{return d3.rgb(d.color).brighter(1);});
+			// d3.select('#'+stateCodesRev[d.id]).style("fill", hoveredStateFill);
+		})
 		.on("click", selectState);
-}
 
-// handles user selecting (clicking) a state on the map
-// if state has already been selected it will deselect
-function selectState(d) {
-	let clickedState = d3.select('#'+stateCodesRev[d.id])
-	let prevState = d3.select('.selected');
-	// checks if state has already been selected
-	if (clickedState.attr('class') === 'selected') {
-		prevState.classed('selected',false);
-		prevState.style('fill',selectedStateFill);
-		drawCharts(schools);
-	} else {
-		prevState.classed('selected',false);
-		prevState.style('fill', selectedStateFill);
-		clickedState.classed('selected',true);
-		selectedStateFill = clickedState.style('fill');
-		clickedState.style('fill','red');
-		drawCharts(schools,stateCodesRev[d.id])
+	// handles user selecting (clicking) a state on the map
+	// if state has already been selected it will deselect
+	function selectState(d) {
+		let clickedState = d3.select('#'+stateCodesRev[d.id])
+		let prevState = d3.select('.selected');
+		// checks if state has already been selected
+		if (clickedState.attr('class') === 'selected') {
+			prevState.classed('selected',false);
+			prevState.style('fill',selectedStateFill);
+			drawCharts(schools);
+		} else {
+			prevState.classed('selected',false);
+			prevState.style('fill', selectedStateFill);
+			clickedState.classed('selected',true);
+			selectedStateFill = clickedState.style('fill');
+			clickedState.style('fill','#42e2f4');
+			drawCharts(schools,stateCodesRev[d.id])
+		}
 	}
 }
 
@@ -230,8 +318,7 @@ function graphMouseOver(d) {
 		<div>Enrollment: '+d['enrollment']+"</div>\
 		<div>Tuition: $"+d['tuition']+cost_after_aid+"</div>\
 		<div>Acceptance Rate: "+d['acceptance-rate']+"%</div>\
-		<img onerror='this.style.display=\"none\"' class='thumbnail' src="+d['primaryPhotoThumb']+" />\
-		<div class='center'>Click to add to list</div>");
+		<img onerror='this.style.display=\"none\"' class='thumbnail' src="+d['primaryPhotoThumb']);
 	tooltip.style("visibility", "visible");
 }
 function graphMouseMove(d) {
@@ -313,7 +400,11 @@ function addBars(schools, chart, valueName, x, y) {
 	    .on("mouseover", graphMouseOver)
 	    .on("mousemove", graphMouseMove)
 		.on("mouseout", graphMouseOut)
-		.on('click', (d)=> { window.open('http://www.google.com/search?q='+d['displayName']); });
+		.on('click', (d)=> { 
+			addSelectedSchoolToList(d);
+			incrementSchoolCount();
+			//window.open('http://www.google.com/search?q='+d['displayName']);
+		});
 }
 
 // adds x-axis label to bar charts, defining what's being measured

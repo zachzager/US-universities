@@ -1,11 +1,25 @@
 /* Map and Charts */
 body {
 	background: #eee;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
-h1 {
+.header {
+  background-color: #010182;
+  color: white;
+  padding: 30px 0px 30px 0px;
+}
+
+.title {
   padding-left: 40px;
-  margin-bottom: -10px;
+  font-size:30px;
+}
+
+.school-list {
+  float: right;
+  margin: -26px 20px 0px 0px;
+  cursor: pointer;
 }
 
 .content {
@@ -19,7 +33,7 @@ h1 {
 }
 
 .description {
-  padding-left: 40px;
+  padding: 0px 40px 0px 40px;
   margin-top:20px;
   margin-bottom: 10px;
 }
@@ -40,18 +54,21 @@ h1 {
 	padding-left: 40px;
 }
 
-@media screen and (min-width: 1150px) {
+.charts-section {
+  text-align: center;
+}
+
+@media screen and (min-width: 1246px) {
     .map-and-legend {
     	float: left;
     }
     .charts-section {
     	height: 600px;
     	overflow: scroll;
-    	float: right
     }
 }
 
-@media screen and (max-width: 1149px) {
+@media screen and (max-width: 1245px) {
     .map-and-legend {
 		margin: auto;
     }
@@ -60,10 +77,7 @@ h1 {
 	}
 }
 
-@media screen and (max-width: 1015px) {
-	.charts-section {
-		text-align: center;
-	}
+@media screen and (max-width: 1216px) {
 	.chart {
 		float: none;
 	}
@@ -112,7 +126,7 @@ h1 {
 }
 
 .text {
-	font-family: 'Open Sans',Arial, Tahoma, sans-serif;
+	font-family: 'Roboto', 'Open Sans', Arial, Tahoma, sans-serif;
 }
 
 .tooltip-title {
@@ -139,14 +153,12 @@ h1 {
   width: auto;
   max-width: 80%;
   max-height: 200px;
-
 }
 
-.school-list {
-  float: right;
-  margin-right: 20px;
-  cursor: pointer;
-  outline: solid;
+.click-instruction {
+  text-align: center;
+  font-style: italic;
+  margin-top:5px;
 }
 
 /* Modal */
@@ -196,6 +208,11 @@ h1 {
 .modal-title {
   font-size: 20px;
   margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.modal-school-title {
+  font-size: 15px;
 }
 
 .modal-school {
@@ -217,10 +234,12 @@ h1 {
   line-height: 20px;
 }
 
-
 .modal-body-content {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+}
 
+.modal-school-body {
+  margin-top: 5px;
 }

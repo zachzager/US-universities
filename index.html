@@ -6,54 +6,47 @@
 <meta charset="utf-8">
 <head>
 	<title>Top US Universities</title>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 </head>
-<link rel="stylesheet" type="text/css" href="css/style.css">
-<h1 class='title text'></h1>
-<div class='school-list text'></div>
+<div class='header'>
+	<div class='title text'></div>
+	<div class='school-list text'></div>
+</div>
 <div class='text description'></div>
 <div class='credits text'></div>
-
-<!-- The Modal -->
 <div id="myModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <div class='modal-body'></div>
-  </div>
-
+	<div class="modal-content">
+    	<span class="close">&times;</span>
+		<div class='modal-body'></div>
+	</div>
 </div>
-
 <div class='content'>
 	<div class='map-and-legend'>
 		<svg class='float-left cursor map' width="600" height="390"></svg>
 		<div class='maplegend text'>
-			<div id='maplegend-label'>Number of Schools</div>
-			<div class='maplegend-info'><div class='maplegend-label'>1</div><div id='maplegend-color'></div><div class='maplegend-label'>27</div></div>
+			<div id='maplegend-label'></div>
+			<div class='maplegend-info'></div>
 		</div>
 	</div>
 	<div class='charts-section'>
 		<div class='chart'>
-			<div id='acceptance-title' class='chart-title text'></div><svg class='cursor graph acceptance' width="500" height="350"></svg>
+			<div id='acceptance-title' class='chart-title text'></div><svg class='cursor graph acceptance' width="600" height="350"></svg>
 		</div>
 		<div class='chart'>
-			<div id='scores-title' class='chart-title text'></div><svg class='cursor graph testScores' width="500" height="350"></svg>
+			<div id='scores-title' class='chart-title text'></div><svg class='cursor graph testScores' width="600" height="350"></svg>
 		</div>
 		<div class='chart'>
-			<div id='tuition-title' class='chart-title text'></div><svg class='cursor graph tuition' width="500" height="350"></svg>
+			<div id='tuition-title' class='chart-title text'></div><svg class='cursor graph tuition' width="600" height="350"></svg>
 		</div>
 		<div class='chart'>
-			<div id='enrollment-title' class='chart-title text'></div><svg class='cursor graph enrollment' width="500" height="350"></svg>
+			<div id='enrollment-title' class='chart-title text'></div><svg class='cursor graph enrollment' width="600" height="350"></svg>
 		</div>
 	</div>
 </div>
-<!-- <div class='sidebar'></div> -->
-
 <script src="js/d3.v4.min.js"></script>
 <script src="js/topojson.v2.min.js"></script>
 <script src="js/stateCodeTables.js"></script>
 <script src="js/mapApp.js"></script>
-<script src="js/sidebar.js"></script>
-
-
-
 
 

@@ -229,16 +229,16 @@ let selectedStateFill;
 
 // draws map on page
 function drawMap(us,schools){
-  	// let maxCount = tallyStates(schools);
-  	tallyStates(schools);
-  	let maxAndMinCounts = getMaxAndMinCounts();
-  	console.log(maxAndMinCounts.max);
+  	tallyStates(schools); // creates tallied list of how many schools are in each state
+  	let maxAndMinCounts = getMaxAndMinCounts(); // get max and min states counts
+  	
+  	// establish color spectrum
   	let color = d3.scaleLinear().domain([1,maxAndMinCounts.max])
     	.interpolate(d3.interpolateHcl)
     	.range([d3.rgb('#cfcfe8'), d3.rgb('#010182')]);
 
+    // add text values to map legend
     d3.select('#maplegend-label').html("Number of Schools");
-
     d3.select('.maplegend-info')
     	.html("<div class='maplegend-label'>"+maxAndMinCounts.min+"</div><div id='maplegend-color'></div><div class='maplegend-label'>"+maxAndMinCounts.max+"</div>");
 

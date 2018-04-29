@@ -10,14 +10,10 @@ let credits = d3.select(".credits").html("<div>April 26, 2018 // <a href='https:
 /* Modal */
 let modal = document.getElementById('myModal'); // Get the modal
 let span = document.getElementsByClassName("close")[0]; // Get the <span> element that closes the modal
-
-// When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-    modal.style.display = "none";
-}
+span.onclick = () => { modal.style.display = "none"; } // When the user clicks on <span> (x), close the modal
 
 // Close modal when the user clicks anywhere else on the page
-window.onclick = function(event) {
+window.onclick = (event) => {
     if (event.target == modal) {
         modal.style.display = "none";
     }
@@ -26,6 +22,7 @@ window.onclick = function(event) {
 
 // user selection tracker initialization
 let selectedSchools = [];
+let selectedSchoolsCookies = [];
 let selectionTracker = d3.select(".school-list")
 	.html("My Schools (<span id='schoolCount'>"+selectedSchools.length+"</span>)")
 	.on('click',showModal);
@@ -90,8 +87,22 @@ function showModal() {
 			.attr('class','text modal-school')
 			.html(modalBodyContentData);
 	}
+
+	// add clear all button
+	modalBody.append('div')
+		.attr('class','clear-schools text')
+		.html("Clear Schools")
+		.on('click', clearSchools);
+
+	// clear list of selected schools
+	function clearSchools(d) {
+		selectedSchools = [];
+		showModal();
+		selectionTracker.html("My Schools (<span id='schoolCount'>"+selectedSchools.length+"</span>)");
+	}
 }
 
+// replace the display number of schools selected with the proper value
 function incrementSchoolCount() {	
 	d3.select('#schoolCount').html(selectedSchools.length);
 }
@@ -143,43 +154,37 @@ function setGraphTitles() {
 }
 setGraphTitles();
 
+// create map and set size
 let map = d3.select("svg.map"),
     map_width = +map.attr("width"),
     map_height = +map.attr("height");
 
 let margin = {top: -20, right: 20, bottom: 30, left: 220};
 
+// establish graph dimensions
 let testScores_frame = d3.select("svg.testScores");
-let testScores = testScores_frame.append('g')
-	.attr("transform", "translate(" + margin.left + ",0)");
+let testScores = testScores_frame.append('g').attr("transform", "translate(" + margin.left + ",0)");
 
 let graph_width = +testScores_frame.attr("width")-20,
 	graph_height = +testScores_frame.attr("height")-40;
 
 let tuition_frame = d3.select("svg.tuition");
-let tuition = tuition_frame.append('g')
-	.attr("transform", "translate(" + margin.left + ",0)");
+let tuition = tuition_frame.append('g').attr("transform", "translate(" + margin.left + ",0)");
 
 let acceptance_frame = d3.select("svg.acceptance");
-let acceptance = acceptance_frame.append('g')
-	.attr("transform", "translate(" + margin.left + ",0)");
+let acceptance = acceptance_frame.append('g').attr("transform", "translate(" + margin.left + ",0)");
 
 let enrollment_frame = d3.select("svg.enrollment");
-let enrollment = enrollment_frame.append('g')
-	.attr("transform", "translate(" + margin.left + ",0)");
+let enrollment = enrollment_frame.append('g').attr("transform", "translate(" + margin.left + ",0)");
 
 var rateByState = d3.map(); // map data by FIPS
 
+// set map size
 var projection = d3.geoAlbersUsa()
     .scale(800)
     .translate([map_width / 2, map_height / 2]);
 
 var path = d3.geoPath().projection(projection);
-
-d3.queue()
-    .defer(d3.json, "js/us.json")
-    .defer(d3.json, "js/schoolInfo.json")
-    .await(ready);
 
 // Tooltip
 // initializes tooltip for all charts and maps
@@ -196,9 +201,15 @@ let tooltip = d3.select("body")
 	.style('font-size', '12px')
 	.style('font-family', 'Open Sans');
 
+// add data from json files, then call ready function
+d3.queue()
+    .defer(d3.json, "js/us.json")
+    .defer(d3.json, "js/schoolInfo.json")
+    .await(ready);
+
+// draw map and charts after loading data
 function ready(error, us, schools) {
   	if (error) throw error;
-
   	// draw various graphical elements
   	drawMap(us,schools);
   	drawCharts(schools);
@@ -215,7 +226,6 @@ function setChoice(state="") {
 
 // scaled color of prev state for viz
 let selectedStateFill;
-let hoveredStateFill;
 
 // draws map on page
 function drawMap(us,schools){
@@ -227,8 +237,7 @@ function drawMap(us,schools){
     	.interpolate(d3.interpolateHcl)
     	.range([d3.rgb('#cfcfe8'), d3.rgb('#010182')]);
 
-    d3.select('#maplegend-label')
-    	.html("Number of Schools");
+    d3.select('#maplegend-label').html("Number of Schools");
 
     d3.select('.maplegend-info')
     	.html("<div class='maplegend-label'>"+maxAndMinCounts.min+"</div><div id='maplegend-color'></div><div class='maplegend-label'>"+maxAndMinCounts.max+"</div>");
@@ -250,14 +259,13 @@ function drawMap(us,schools){
 	    	tooltip.style("visibility", "visible");
 	    })
 	    .on("mousemove", (d)=>{ tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
-		.on("mouseout", (d)=>{ 
-			tooltip.style("visibility", "hidden"); // hide tooltip
-		})
+		.on("mouseout", (d)=>{ tooltip.style("visibility", "hidden"); }) // hide tooltip
 		.on("click", selectState);
 
 	// handles user selecting (clicking) a state on the map
 	// if state has already been selected it will deselect
 	function selectState(d) {
+		let stateFillColor = '#42e2f4';
 		let clickedState = d3.select('#'+stateCodesRev[d.id])
 		let prevState = d3.select('.selected');
 		// checks if state has already been selected
@@ -270,7 +278,7 @@ function drawMap(us,schools){
 			prevState.style('fill', selectedStateFill);
 			clickedState.classed('selected',true);
 			selectedStateFill = clickedState.style('fill');
-			clickedState.style('fill','#42e2f4');
+			clickedState.style('fill',stateFillColor);
 			drawCharts(schools,stateCodesRev[d.id])
 		}
 	}
@@ -315,8 +323,6 @@ function drawCharts(schools,state="") {
 		schools = getTop30(schools);
 	}
 
-	console.log(schools);
-
 	// call chart drawing functions
 	addBarChart(schools,acceptance,'acceptance-rate','Acceptance Rate','','%',false); // draw acceptance
   	addBarChart(schools,testScores,'act-avg','Average ACT Score','','',true); // draw ACT scores
@@ -325,7 +331,7 @@ function drawCharts(schools,state="") {
 }
 
 //
-// Callback function for generating graph tool tips
+// Callback function for generating graph tooltips
 //
 function graphMouseOver(d) {
 	d3.select(this).style('fill','#45b1cb'); // highlight hovered over bar
@@ -333,30 +339,25 @@ function graphMouseOver(d) {
 	let tooltipData = "<div class='tooltip-title center'>"+d['displayName']+"</div>\
 		<div class='tooltip-subtitle center'>"+d['city']+', '+d['state']+"</div>";
 
-	// format overall rank
-	if (d['overallRank'] != null && d['overallRank'] > 0) {
+	if (d['overallRank'] != null && d['overallRank'] > 0) { // format overall rank
 		tooltipData += "<div>Overall Rank: "+d['overallRank']+"</div>";
 	} else {
 		tooltipData += "<div>Overall Rank: Not Ranked</div>";
 	}
 
-	// format ACT score
-	if (d['act-avg'] != null) {
+	if (d['act-avg'] != null) { // format ACT score
 		tooltipData += "<div>Average ACT Score: "+d['act-avg']+"</div>";
 	}
 
-	// enrollment
-	if (d['enrollment'] != null) {
+	if (d['enrollment'] != null) { // format enrollment
 		tooltipData += "<div>Enrollment: "+d['enrollment']+"</div>";
 	}
 
-	// format cost after aid
-	if (d['cost-after-aid'] != null) {
+	if (d['cost-after-aid'] != null) { // format cost after aid
 		tooltipData += "<div>Tuition: $"+d['tuition']+" ($"+d['cost-after-aid']+" after aid)</div>";
 	}
 
-	// format acceptance rate
-	if (d['acceptance-rate'] != null) {
+	if (d['acceptance-rate'] != null) { // format acceptance rate
 		tooltipData += "<div>Acceptance Rate: "+d['acceptance-rate']+"%</div>";
 	}
 
@@ -449,7 +450,6 @@ function addBars(schools, chart, valueName, x, y) {
 		.on('click', (d)=> { 
 			addSelectedSchoolToList(d);
 			incrementSchoolCount();
-			//window.open('http://www.google.com/search?q='+d['displayName']);
 		});
 }
 

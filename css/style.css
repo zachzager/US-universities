@@ -22,6 +22,12 @@ body {
   cursor: pointer;
 }
 
+@media screen and (max-width: 550px) {
+  .school-list {
+    margin: 0px 20px 0px 0px;
+  }
+}
+
 .content {
 	width: 100%;
 }
@@ -212,7 +218,13 @@ body {
 }
 
 .modal-school-title {
-  font-size: 15px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.modal-school-subtitle {
+  font-size: 16px;
+  font-weight: bold;
 }
 
 .modal-school {
@@ -242,4 +254,15 @@ body {
 
 .modal-school-body {
   margin-top: 5px;
+}
+
+.clear-schools {
+  text-align: center;
+  cursor: pointer;
+  width: 100px;
+  margin: auto;
+  border: solid 0.5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  background-color: #eee;
 }

@@ -4,8 +4,7 @@
 
 // page title initialization
 let title = d3.select(".title").html("Top Universities in the USA");
-let subtitle = d3.select(".description").html("This tool is designed to help you choose a university to attend in the United States based on data from 2018. Select a state to view the top schools ranked by several categories. By default, the charts show the top 30 schools based on US News' annual rankings. Place your cursor over the bars on the graphs for more information about individual schools. It should be noted that this tool does not include America's many colleges that do not have university status. The data used in this tool is from Kaggle user Christopher Lambert's <a href='https://www.kaggle.com/theriley106/university-statistics'>\"University Statistics\"</a> dataset via US News & World Report.");
-let credits = d3.select(".credits").html("<div>April 26, 2018 // <a href='https://zachzager.wixsite.com/portfolio'>Zach Zager</a>, <a href='https://www.linkedin.com/in/jingleizuo/'>Jinglei Zuo</a>, and <a href='https://www.linkedin.com/in/%E5%8F%AF-%E5%85%B0-a4247a142/'>Ke \"Coco\" Lan</a></div>");
+let instructionsAndCredits = "<div class='description text'><div>This tool is designed to help you choose a university to attend in the United States based on data from 2018. Select a state to view the top schools ranked by several categories. By default, the charts show the top 30 schools based on US News' annual rankings. Place your cursor over the bars on the graphs for more information about individual schools. Click on a bar to save the school for later.</div><br><div>The data used in this tool is from Kaggle user Christopher Lambert's <a href='https://www.kaggle.com/theriley106/university-statistics'>University Statistics</a> dataset via US News & World Report. It should be noted that this tool does not include America's many colleges that do not have university status.</div></div><div class='credits'>April 30, 2018 // <a href='https://zachzager.wixsite.com/portfolio'>Zach Zager</a>, <a href='https://www.linkedin.com/in/jingleizuo/'>Jinglei Zuo</a>, and <a href='https://www.linkedin.com/in/%E5%8F%AF-%E5%85%B0-a4247a142/'>Ke \"Coco\" Lan</a></div>";
 
 /* Modal */
 let modal = document.getElementById('myModal'); // Get the modal
@@ -20,15 +19,30 @@ window.onclick = (event) => {
 }
 /* */
 
+// info icon initialization
+let infoIcon = d3.select(".info-icon-holder")
+	.html("<img class='info-icon' src='img/infoIcon.png' />")
+	.on('click',showInstructionModal);
+
+// opens the modal and fills it with instructions and info
+function showInstructionModal() {
+	modal.style.display = "block";
+	let modalBody = d3.select('.modal-body');
+	modalBody.selectAll('*').remove();
+	modalBody.append('div')
+		.attr('class','text modal-title')
+		.html(instructionsAndCredits)
+		.enter();
+}
+
 // user selection tracker initialization
 let selectedSchools = [];
-let selectedSchoolsCookies = [];
 let selectionTracker = d3.select(".school-list")
 	.html("My Schools (<span id='schoolCount'>"+selectedSchools.length+"</span>)")
-	.on('click',showModal);
+	.on('click',showSchoolModal);
 
 // opens the modal and places all of the selected schools onto it
-function showModal() {
+function showSchoolModal() {
 	modal.style.display = "block";
 	let modalBody = d3.select('.modal-body');
 	modalBody.selectAll('*').remove();
@@ -97,7 +111,7 @@ function showModal() {
 	// clear list of selected schools
 	function clearSchools(d) {
 		selectedSchools = [];
-		showModal();
+		showSchoolModal();
 		selectionTracker.html("My Schools (<span id='schoolCount'>"+selectedSchools.length+"</span>)");
 	}
 }

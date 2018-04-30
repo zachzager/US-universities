@@ -18,30 +18,48 @@ body {
 
 .school-list {
   float: right;
-  margin: -26px 20px 0px 0px;
+  margin: -28px 100px 0px 0px;
   cursor: pointer;
 }
 
-@media screen and (max-width: 550px) {
+.info-icon-holder {
+  float: right;
+  cursor: pointer;
+  margin: -30px 60px 0px 0px;
+}
+
+.info-icon {
+  height: 25px;
+  width: 25px;
+}
+
+@media screen and (max-width: 610px) {
   .school-list {
-    margin: 0px 20px 0px 0px;
+    margin: 0px 100px 0px 0px;
+  }
+
+  .info-icon-holder {
+    margin: -2px -150px 0px 0px;
   }
 }
 
 .content {
 	width: 100%;
+  margin-top: 30px;
 }
 
 .credits {
   padding-left: 40px;
   margin-top:20px;
   margin-bottom: 10px;
+  text-align: left;
 }
 
 .description {
   padding: 0px 40px 0px 40px;
   margin-top:20px;
   margin-bottom: 10px;
+  text-align: left;
 }
 
 .states {
@@ -261,7 +279,7 @@ body {
   cursor: pointer;
   width: 100px;
   margin: auto;
-  margin-top: 10px;
+  margin-top: 25px;
   border: solid 0.5px;
   padding-top: 5px;
   padding-bottom: 5px;

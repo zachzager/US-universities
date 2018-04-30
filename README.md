@@ -1,5 +1,7 @@
 Top Universities in the USA
+
 Zach Zager, Jinglei Zuo, and Ke "Coco" Lan
+
 April 30, 2018
 
 This tool is designed to help you choose a university to attend in the United States based on data from 2018. Select a state to view the top schools ranked by several categories. By default, the charts show the top 30 schools based on US News' annual rankings. Place your cursor over the bars on the graphs for more information about individual schools. Click on a bar to save the school for later.
